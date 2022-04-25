@@ -1,0 +1,3 @@
+---
+Checks:          '*,-altera-*,-llvmlibc-*,-cppcoreguidelines-*,-readability-*,-bugprone-easily-swappable-parameters,-hicpp-signed-bitwise,-llvm-else-after-return'
+WarningsAsErrors: true
