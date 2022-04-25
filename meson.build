@@ -1,4 +1,8 @@
-project('encoding', 'c',
+project(
+	'encoding',
+	'c',
+	license: 'BSL-1.0',
+	version: '1.0.0',
 	default_options: [
 		'c_std=c11',
 		'warning_level=3',
@@ -47,7 +51,8 @@ install_headers(
 	subdir: 'encoding'
 )
 
-encoding_lib = library('encoding',
+encoding_lib = library(
+	'encoding',
 	srcs,
 	include_directories: incdirs,
 )
@@ -60,7 +65,8 @@ encoding_dep = declare_dependency(
 subdir('tests')
 
 pkg = import('pkgconfig')
-pkg.generate(encoding_lib,
+pkg.generate(
+	encoding_lib,
 	description: 'A library for encoding and decoding binary data in '+
-		'various formats.',
+	             'various formats.',
 )
