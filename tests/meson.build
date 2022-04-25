@@ -1,10 +1,5 @@
 test_incdirs = [incdirs, include_directories('.')]
 
-shared_lib = shared_library('encoding',
-	srcs,
-	include_directories: incdirs
-)
-
 strerror = executable(
 	'strerror',
 	'strerror.c',

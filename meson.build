@@ -7,7 +7,7 @@ project(
 		'c_std=c11',
 		'warning_level=3',
 		'default_library=static',
-	]
+	],
 )
 
 if host_machine.system() == 'windows'
