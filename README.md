@@ -13,9 +13,6 @@ The following operations are supported:
 - encoding, decoding, and validating base16 (encoding/hex), base32, and base64
 - encoding and decoding binary data in big or little endian byte order
 
-This library can be considered stable. Any changes will be backwards
-compatible, and none are currently planned.
-
 ## Documentation
 
 Each interface is documented in its respective header file. For example, the
