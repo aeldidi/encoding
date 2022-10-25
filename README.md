@@ -72,6 +72,5 @@ trusted input, while also causing untrusted input to fail early.
 
 ## License
 
-`libencoding` is licensed under the Boost Software License, Version 1.0. See
-the included `LICENSE` file or https://www.boost.org/LICENSE_1_0.txt for more
-details.
+`libencoding` is licensed under the 0BSD License. See the included `LICENSE`
+file more details.

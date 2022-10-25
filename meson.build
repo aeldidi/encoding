@@ -1,7 +1,7 @@
 project(
 	'encoding',
 	'c',
-	license: 'BSL-1.0',
+	license: '0BSD',
 	version: '1.0.0',
 	default_options: [
 		'c_std=c11',

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BSL-1.0
+// SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
 #ifndef COMPILER_EXTENSIONS_H
 #define COMPILER_EXTENSIONS_H
