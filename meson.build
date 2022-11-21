@@ -31,7 +31,6 @@ srcs = files(
 	'src/encoding/common.c',
 	'src/encoding/utf8.c',
 	'src/encoding/utf16.c',
-	'src/encoding/binary.c',
 	'src/encoding/base32.c',
 	'src/encoding/base64.c',
 	'src/encoding/hex.c',

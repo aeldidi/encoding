@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "compiler_extensions.h"
 #include "encoding/binary.h"
 #include "encoding/hex.h"
 
@@ -48,11 +49,11 @@ const uint8_t char_to_nybble[0x67] = {
 bool
 hex_valid(const size_t str_len, const uint8_t* str)
 {
-	if (str == NULL || str_len % 2 != 0) {
+	if (unlikely(str == NULL || str_len % 2 != 0)) {
 		return false;
 	}
 
-	if (str_len == 0) {
+	if (unlikely(str_len == 0)) {
 		return true;
 	}
 
@@ -83,19 +84,19 @@ int
 hex_encode(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint8_t* out)
 {
-	if (str_len == 0) {
+	if (unlikely(str_len == 0)) {
 		return 0;
 	}
 
-	if (str == NULL) {
+	if (unlikely(str == NULL)) {
 		return ENCODING_INVALID_NULL_POINTER;
 	}
 
-	if (out_len < hex_encoded_length(str_len)) {
+	if (unlikely(out_len < hex_encoded_length(str_len))) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (out == NULL) {
+	if (unlikely(out == NULL)) {
 		return ENCODING_INVALID_NULL_POINTER;
 	}
 
@@ -119,19 +120,19 @@ int
 hex_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint8_t* out)
 {
-	if (str_len > 0 && str == NULL) {
+	if (unlikely(str_len > 0 && str == NULL)) {
 		return ENCODING_INVALID_NULL_POINTER;
 	}
 
-	if (str_len % 2 != 0) {
+	if (unlikely(str_len % 2 != 0)) {
 		return ENCODING_INVALID_ARGUMENT;
 	}
 
-	if (hex_decoded_length(str_len) > out_len) {
+	if (unlikely(hex_decoded_length(str_len) > out_len)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (out == NULL) {
+	if (unlikely(out == NULL)) {
 		return ENCODING_INVALID_NULL_POINTER;
 	}
 
@@ -194,15 +195,15 @@ int
 hex_dump(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint8_t* out, uint64_t* offset)
 {
-	if (str == NULL && str_len > 0) {
+	if (unlikely(str == NULL && str_len > 0)) {
 		return ENCODING_INVALID_NULL_POINTER;
 	}
 
-	if (hex_dump_length(str_len) > out_len) {
+	if (unlikely(hex_dump_length(str_len) > out_len)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (out == NULL) {
+	if (unlikely(out == NULL)) {
 		return ENCODING_INVALID_NULL_POINTER;
 	}
 
@@ -210,7 +211,7 @@ hex_dump(const size_t str_len, const uint8_t* str, const size_t out_len,
 	if (offset != NULL) {
 		address = *offset;
 		// Detects if address value would wrap around.
-		if (address > SIZE_MAX - str_len) {
+		if (unlikely(address > SIZE_MAX - str_len)) {
 			return ENCODING_INVALID_ARGUMENT;
 		}
 	}

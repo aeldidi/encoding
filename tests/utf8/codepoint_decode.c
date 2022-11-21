@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "common.h"
+#include "encoding/common.h"
 #include "encoding/utf8.h"
 
 int
@@ -50,6 +51,27 @@ main()
 	assert(utf8_codepoint_decode(ARRAY_SIZEOF(fowl) - 1, fowl, &size) ==
 			fowl_cp);
 	assert(size == 4);
+
+	// 2 byte codepoint, byte 2 invalid.
+	const uint8_t pilcrow_invalid[] = "\xc2\xff";
+	assert(utf8_codepoint_decode(ARRAY_SIZEOF(pilcrow_invalid) - 1,
+			       pilcrow_invalid,
+			       &size) == ENCODING_CODEPOINT_ERROR);
+	assert(size == 3);
+
+	// 3 byte codepoint, byte 2 invalid
+	const uint8_t ten_thous_invalid[] = "\xe2\xff\xb1";
+	assert(utf8_codepoint_decode(ARRAY_SIZEOF(ten_thous_invalid) - 1,
+			       ten_thous_invalid,
+			       &size) == ENCODING_CODEPOINT_ERROR);
+	assert(size == 3);
+
+	// 4 byte codepoint, byte 2 invalid
+	const uint8_t fowl_invalid[] = "\xf0\xff\x9c\x8e";
+	assert(utf8_codepoint_decode(ARRAY_SIZEOF(fowl_invalid) - 1,
+			       fowl_invalid,
+			       &size) == ENCODING_CODEPOINT_ERROR);
+	assert(size == 3);
 
 	// Test that an invalid 4 byte codepoint with correct upper bits is
 	// detected as so.

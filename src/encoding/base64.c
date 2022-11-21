@@ -125,12 +125,14 @@ static bool
 base64_valid_fast(const size_t str_len, const uint8_t* str,
 		const size_t num_padding_chars)
 {
-	int result = 1;
+	bool result = true;
+	// Since base64 chunks are 4 characters, we can check 4 chars at a
+	// time.
 	for (size_t i = 0; i + 4 < str_len - num_padding_chars; i += 4) {
-		int tmp1 = 0;
-		int tmp2 = 0;
-		int tmp3 = 0;
-		int tmp4 = 0;
+		bool tmp1 = false;
+		bool tmp2 = false;
+		bool tmp3 = false;
+		bool tmp4 = false;
 		// 'A' to 'Z'
 		tmp1 |= (str[i] >= 0x41) & (str[i] <= 0x5a);
 		tmp2 |= (str[i + 1] >= 0x41) & (str[i + 1] <= 0x5a);
@@ -160,9 +162,9 @@ base64_valid_fast(const size_t str_len, const uint8_t* str,
 		result &= tmp1 & tmp2 & tmp3 & tmp4;
 	}
 
-	int tmp1 = 1;
-	int tmp3 = 1;
-	int tmp2 = 1;
+	bool tmp1 = true;
+	bool tmp3 = true;
+	bool tmp2 = true;
 	switch (num_padding_chars) {
 	case 1:
 		tmp1 = 0;
@@ -207,12 +209,12 @@ static bool
 base64url_valid_fast(const size_t str_len, const uint8_t* str,
 		const size_t num_padding_chars)
 {
-	int result = 1;
+	bool result = true;
 	for (size_t i = 0; i + 4 < str_len - num_padding_chars; i += 4) {
-		int tmp1 = 0;
-		int tmp2 = 0;
-		int tmp3 = 0;
-		int tmp4 = 0;
+		bool tmp1 = false;
+		bool tmp2 = false;
+		bool tmp3 = false;
+		bool tmp4 = false;
 		// 'A' to 'Z'
 		tmp1 |= (str[i] >= 0x41) & (str[i] <= 0x5a);
 		tmp2 |= (str[i + 1] >= 0x41) & (str[i + 1] <= 0x5a);
@@ -242,9 +244,9 @@ base64url_valid_fast(const size_t str_len, const uint8_t* str,
 		result &= tmp1 & tmp2 & tmp3 & tmp4;
 	}
 
-	int tmp1 = 1;
-	int tmp2 = 1;
-	int tmp3 = 1;
+	bool tmp1 = true;
+	bool tmp2 = true;
+	bool tmp3 = true;
 	switch (num_padding_chars) {
 	case 1:
 		tmp1 = 0;
@@ -441,9 +443,8 @@ alphabet_find(const uint8_t ch, const uint8_t alphabet[64])
 }
 
 static int
-decode_fast(const size_t str_len, const uint8_t* str, const size_t out_len,
-		uint8_t* out, const uint8_t decode_table[256],
-		const uint8_t shift_amount)
+decode_fast(const size_t str_len, const uint8_t* str, uint8_t* out,
+		const uint8_t decode_table[256], const uint8_t shift_amount)
 {
 	size_t j = 0;
 	for (size_t i = 0; i < str_len; i += 4, j += 3) {
@@ -490,13 +491,13 @@ base64_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 	}
 
 	if (alphabet == base64) {
-		return decode_fast(str_len, str, decoded_len, out,
-				base64_decode_table, 0x2b);
+		return decode_fast(
+				str_len, str, out, base64_decode_table, 0x2b);
 	}
 
 	if (alphabet == base64url) {
-		return decode_fast(str_len, str, decoded_len, out,
-				base64url_decode_table, 0x2d);
+		return decode_fast(str_len, str, out, base64url_decode_table,
+				0x2d);
 	}
 
 	size_t out_index = 0;

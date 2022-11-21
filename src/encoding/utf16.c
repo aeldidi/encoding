@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "compiler_extensions.h"
+#include "encoding/common.h"
 #include "encoding/utf16.h"
 
 static bool
@@ -15,7 +17,7 @@ in_range16(const uint16_t x, const uint16_t start, const uint16_t end)
 bool
 utf16_valid(const size_t str_len, const uint16_t* str)
 {
-	if (str == NULL && str_len > 0) {
+	if (unlikely(str == NULL && str_len > 0)) {
 		return false;
 	}
 
@@ -70,11 +72,11 @@ utf16_encoded_length_codepoint_size(const uint32_t cp)
 int
 utf16_encoded_length(const size_t str_len, const uint32_t* str, size_t* out)
 {
-	if (str_len == 0) {
+	if (unlikely(str_len == 0)) {
 		return 0;
 	}
 
-	if (str == NULL || out == NULL) {
+	if (unlikely(str == NULL || out == NULL)) {
 		return ENCODING_INVALID_NULL_POINTER;
 	}
 
@@ -90,16 +92,16 @@ utf16_encoded_length(const size_t str_len, const uint32_t* str, size_t* out)
 int
 utf16_codepoint_encode(const uint32_t cp, const size_t out_len, uint16_t* out)
 {
-	if (out_len == 0) {
+	if (unlikely(out_len == 0)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (out == NULL) {
+	if (unlikely(out == NULL)) {
 		return ENCODING_INVALID_NULL_POINTER;
 	}
 
 	size_t size = utf16_codepoint_encoded_size(cp);
-	if (out_len < size) {
+	if (unlikely(out_len < size)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
