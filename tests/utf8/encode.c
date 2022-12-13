@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #include "common.h"
 #include "encoding/utf8.h"
@@ -48,14 +48,6 @@ main()
 	// at all.
 
 	assert(utf8_encode(0, NULL, 0, NULL) == 0);
-
-	// Test if passing str and buf as NULL returns
-	// ENCODING_INVALID_NULL_POINTER.
-
-	assert(utf8_encode(1, NULL, ARRAY_SIZEOF(buf), buf) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(utf8_encode(1, valid, 1, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
 
 	// Test if passing a length too small returns
 	// ENCODING_BUFFER_TOO_SMALL.

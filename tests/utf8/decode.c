@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #include "common.h"
 #include "encoding/utf8.h"
@@ -45,16 +45,6 @@ main()
 	assert(buf[0] == invalid_decoded);
 
 	mem_set((uint8_t*)buf, 0, 10);
-
-	// Test if passing str and buf as NULL returns
-	// ENCODING_INVALID_NULL_POINTER.
-
-	assert(utf8_decode(1, NULL, ARRAY_SIZEOF(buf), buf) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(utf8_decode(1, valid, 1, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(buf[0] == 0);
-
 	mem_set((uint8_t*)buf, 0, 10);
 
 	// Test if passing an empty string returns 0 and doesn't write anything

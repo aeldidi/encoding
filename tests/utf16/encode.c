@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
-#include <stdint.h>
+#include <inttypes.h>
 
 #include "common.h"
-#include "encoding/binary.h"
+#include "encoding/binary.c"
 #include "encoding/utf16.h"
 
 int
@@ -71,21 +71,10 @@ main()
 	assert(mem_equal((uint8_t*)native, (uint8_t*)out, 2));
 
 	mem_set((uint8_t*)out, 0, ARRAY_SIZEOF(out) * sizeof(*out));
-
-	assert(utf16_encode(1, &bom_cp, 1, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(utf16_encode(1, &grin_cp, 0, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
-
 	mem_set((uint8_t*)out, 0, sizeof(out));
 
 	assert(utf16_encode(0, &invalid_cp, 0, out) == 0);
 
 	assert(utf16_encode(1, &invalid_cp, 0, out) ==
 			ENCODING_BUFFER_TOO_SMALL);
-	assert(utf16_encode(1, NULL, 0, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(utf16_encode(1, NULL, 0, out) == ENCODING_INVALID_NULL_POINTER);
-	assert(utf16_encode(1, &invalid_cp, 0, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
 }

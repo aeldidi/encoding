@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 
 #include "common.h"
@@ -156,10 +156,6 @@ main()
 			       &off) == ENCODING_INVALID_ARGUMENT);
 
 	// Edge cases.
-	assert(hex_dump(1, NULL, 1, out, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(hex_dump(0, NULL, 1, NULL, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
 	assert(hex_dump(1, bytes, 0, NULL, NULL) == ENCODING_BUFFER_TOO_SMALL);
 	assert(hex_dump(ARRAY_SIZEOF(bytes), bytes, 1, out, NULL) ==
 			ENCODING_BUFFER_TOO_SMALL);

@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #include "common.h"
-#include "encoding/common.h"
 #include "encoding/utf8.h"
 
 int

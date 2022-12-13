@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
+#include "../../include/encoding/binary.c"
 #include "compiler_extensions.h"
-#include "encoding/binary.h"
-#include "encoding/hex.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 const uint8_t hex_chars[] = {
 		// '0' to '9'
@@ -18,42 +21,27 @@ const uint8_t hex_chars[] = {
 		//
 };
 
+// Generated using tools/gen_hex_char_to_nybble.c
 const uint8_t char_to_nybble[0x67] = {
-		// '0' to '9'
-		[0x30] = 0,
-		[0x31] = 1,
-		[0x32] = 2,
-		[0x33] = 3,
-		[0x34] = 4,
-		[0x35] = 5,
-		[0x36] = 6,
-		[0x37] = 7,
-		[0x38] = 8,
-		[0x39] = 9,
-		// 'a' to 'z'
-		[0x61] = 10,
-		[0x62] = 11,
-		[0x63] = 12,
-		[0x64] = 13,
-		[0x65] = 14,
-		[0x66] = 15,
-		// 'A' to 'Z'
-		[0x41] = 10,
-		[0x42] = 11,
-		[0x43] = 12,
-		[0x44] = 13,
-		[0x45] = 14,
-		[0x46] = 15,
+		//
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0,
+		0, 0, 10, 11, 12, 13, 14, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12, 13,
+		14, 15
+		//
 };
 
+ENCODING_PUBLIC
 bool
 hex_valid(const size_t str_len, const uint8_t* str)
 {
-	if (unlikely(str == NULL || str_len % 2 != 0)) {
+	if (UNLIKELY(str == NULL || str_len % 2 != 0)) {
 		return false;
 	}
 
-	if (unlikely(str_len == 0)) {
+	if (UNLIKELY(str_len == 0)) {
 		return true;
 	}
 
@@ -74,31 +62,29 @@ hex_valid(const size_t str_len, const uint8_t* str)
 	return result;
 }
 
+ENCODING_PUBLIC
 size_t
 hex_encoded_length(const size_t len)
 {
 	return len * 2;
 }
 
+ENCODING_PUBLIC
 int
 hex_encode(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint8_t* out)
 {
-	if (unlikely(str_len == 0)) {
+	if (UNLIKELY(str_len == 0)) {
 		return 0;
 	}
 
-	if (unlikely(str == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
-	if (unlikely(out_len < hex_encoded_length(str_len))) {
+	if (UNLIKELY(out_len < hex_encoded_length(str_len))) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (unlikely(out == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(out != NULL);
 
 	size_t out_index = 0;
 	for (size_t i = 0; i < str_len; i += 1) {
@@ -110,31 +96,29 @@ hex_encode(const size_t str_len, const uint8_t* str, const size_t out_len,
 	return 0;
 }
 
+ENCODING_PUBLIC
 size_t
 hex_decoded_length(const size_t len)
 {
 	return len / 2;
 }
 
+ENCODING_PUBLIC
 int
 hex_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint8_t* out)
 {
-	if (unlikely(str_len > 0 && str == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str_len == 0 || str != NULL);
 
-	if (unlikely(str_len % 2 != 0)) {
+	if (UNLIKELY(str_len % 2 != 0)) {
 		return ENCODING_INVALID_ARGUMENT;
 	}
 
-	if (unlikely(hex_decoded_length(str_len) > out_len)) {
+	if (UNLIKELY(hex_decoded_length(str_len) > out_len)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (unlikely(out == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(out != NULL);
 
 	size_t out_index = 0;
 	for (size_t i = 0; i < str_len; i += 2) {
@@ -148,6 +132,7 @@ hex_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 
 #define HEX_DUMP_LINE_LEN 78
 
+ENCODING_PUBLIC
 size_t
 hex_dump_length(const size_t len)
 {
@@ -191,27 +176,24 @@ uint64_to_str(uint64_t num)
 #define UTF8_NEWLINE 0x0a // '\n'
 #define UTF8_PIPE    0x7c // '|'
 
+ENCODING_PUBLIC
 int
 hex_dump(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint8_t* out, uint64_t* offset)
 {
-	if (unlikely(str == NULL && str_len > 0)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str_len == 0 || str != NULL);
 
-	if (unlikely(hex_dump_length(str_len) > out_len)) {
+	if (UNLIKELY(hex_dump_length(str_len) > out_len)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (unlikely(out == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(out != NULL);
 
 	size_t address = 0;
 	if (offset != NULL) {
 		address = *offset;
 		// Detects if address value would wrap around.
-		if (unlikely(address > SIZE_MAX - str_len)) {
+		if (UNLIKELY(address > SIZE_MAX - str_len)) {
 			return ENCODING_INVALID_ARGUMENT;
 		}
 	}
@@ -269,3 +251,7 @@ hex_dump(const size_t str_len, const uint8_t* str, const size_t out_len,
 
 	return 0;
 }
+
+#if defined(__cplusplus)
+}
+#endif

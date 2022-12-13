@@ -1,16 +1,26 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <assert.h>
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
+#include "../../include/encoding/binary.c"
 #include "compiler_extensions.h"
-#include "encoding/base32.h"
-#include "encoding/binary.h"
+
+#define EXTERN
+
+#if defined(__cplusplus)
+#undef EXTERN
+#define EXTERN extern
+extern "C" {
+#endif
 
 // The ASCII '=' character is used for padding.
 #define BASE32_PAD 0x3d
 
+ENCODING_PUBLIC
+EXTERN
 const uint8_t base32[32] = {
 		// ASCII 'A' to 'Z'
 		0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a,
@@ -21,6 +31,8 @@ const uint8_t base32[32] = {
 		//
 };
 
+ENCODING_PUBLIC
+EXTERN
 const uint8_t base32hex[32] = {
 		// ASCII '0' to '9'
 		0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
@@ -41,6 +53,8 @@ const uint8_t base32hex[32] = {
 #define ASCII_o 0x6f
 #define ASCII_u 0x75
 
+ENCODING_PUBLIC
+EXTERN
 const uint8_t base32crockford[32] = {
 		// ASCII '0' to '9'
 		0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
@@ -177,20 +191,22 @@ base32crockford_valid(const size_t str_len, const uint8_t* str,
 	return result;
 }
 
+// base32_valid returns true if str is valid base32, false otherwise.
+ENCODING_PUBLIC
 bool
 base32_valid(const size_t str_len, const uint8_t* str,
 		const uint8_t alphabet[32])
 {
-	if (unlikely(str_len == 0)) {
+	if (UNLIKELY(str_len == 0)) {
 		return true;
 	}
 
-	if (unlikely(alphabet == NULL || str == NULL)) {
+	if (UNLIKELY(alphabet == NULL || str == NULL)) {
 		return false;
 	}
 
 	size_t num_padding_chars = get_num_padding_chars(str_len, str);
-	if (unlikely(num_padding_chars > 6 || str_len % 8 != 0)) {
+	if (UNLIKELY(num_padding_chars > 6 || str_len % 8 != 0)) {
 		return false;
 	}
 
@@ -247,6 +263,9 @@ base32_valid(const size_t str_len, const uint8_t* str,
 	return result;
 }
 
+// base32_encoded_length returns the base32 encoded size of the
+// base32-encoded data with the length str_len.
+ENCODING_PUBLIC
 size_t
 base32_encoded_length(const size_t str_len)
 {
@@ -265,44 +284,34 @@ base32_decoded_length_impl(const size_t str_len, const uint8_t* str)
 	return (str_len - num_padding_chars) * 5 / 8;
 }
 
-int
-base32_decoded_length(const size_t str_len, const uint8_t* str, size_t* out)
+ENCODING_PUBLIC
+size_t
+base32_decoded_length(const size_t str_len, const uint8_t* str)
 {
-	if (unlikely(out == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
-
-	if (unlikely(str_len == 0)) {
-		*out = 0;
+	if (UNLIKELY(str_len == 0)) {
 		return 0;
 	}
 
-	if (unlikely(str == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
-	*out = base32_decoded_length_impl(str_len, str);
-	return 0;
+	return base32_decoded_length_impl(str_len, str);
 }
 
+ENCODING_PUBLIC
 int
 base32_encode(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint8_t* out, const uint8_t alphabet[32])
 {
-	if (unlikely(alphabet == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(alphabet != NULL);
 
-	if (unlikely(str_len == 0)) {
+	if (UNLIKELY(str_len == 0)) {
 		return 0;
 	}
 
-	if (unlikely(str == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
 	size_t encoded_len = base32_encoded_length(str_len);
-	if (unlikely(out == NULL || out_len < encoded_len)) {
+	if (UNLIKELY(out == NULL || out_len < encoded_len)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
@@ -377,16 +386,16 @@ base32_encode(const size_t str_len, const uint8_t* str, const size_t out_len,
 	return 0;
 }
 
-static int
+static uint8_t
 alphabet_find(const uint8_t ch, const uint8_t alphabet[32])
 {
-	for (int i = 0; i < 32; i += 1) {
+	for (uint8_t i = 0; i < 32; i += 1) {
 		if (ch == alphabet[i]) {
 			return i;
 		}
 	}
 
-	return -1;
+	return UINT8_MAX;
 }
 
 static uint8_t
@@ -443,31 +452,29 @@ base32crockford_decode(const size_t str_len, const uint8_t* str, uint8_t* out)
 	return 0;
 }
 
+ENCODING_PUBLIC
 int
 base32_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint8_t* out, const uint8_t alphabet[32])
 {
-	if (unlikely(alphabet == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(alphabet != NULL);
 
-	if (unlikely(str_len == 0)) {
+	if (UNLIKELY(str_len == 0)) {
 		return 0;
 	}
 
-	if (unlikely(str == NULL || (out == NULL && out_len > 0))) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
-	if (unlikely(str_len % 8 != 0)) {
+	if (UNLIKELY(str_len % 8 != 0)) {
 		return ENCODING_INVALID_ARGUMENT;
 	}
 
-	size_t decoded_len = 0;
-	(void)base32_decoded_length(str_len, str, &decoded_len);
-	if (unlikely(out_len < decoded_len)) {
+	size_t decoded_len = base32_decoded_length(str_len, str);
+	if (UNLIKELY(out_len < decoded_len)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
+
+	assert(out_len == 0 || out != NULL);
 
 	if (alphabet == base32crockford) {
 		return base32crockford_decode(str_len, str, out);
@@ -495,3 +502,8 @@ base32_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 
 	return 0;
 }
+
+#if defined(__cplusplus)
+}
+#endif
+#undef EXTERN

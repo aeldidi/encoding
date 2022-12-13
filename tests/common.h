@@ -1,9 +1,9 @@
 #ifndef TEST_COMMON_H
 #define TEST_COMMON_H
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 

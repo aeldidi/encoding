@@ -5,22 +5,53 @@
 
 // This file contains commonly implemented extensions which we make use of.
 
-#define unlikely(expr) (expr)
-#define unreachable()
+#if !defined(ENCODING_PUBLIC)
+#define ENCODING_PUBLIC
+#endif
 
-#if !defined(__has_builtin)
-#else
+// Finding the C version
 
+#if !defined(ENCODING_C23)
+#define ENCODING_C23 0
+#endif
+
+#if !defined(ENCODING_C11)
+#define ENCODING_C11 0
+#endif
+
+#if defined(__STDC_VERSION__)
+#if __STDC_VERSION__ >= 201112L
+#undef ENCODING_C11
+#define ENCODING_C11 1
+#endif
+
+#if __STDC_VERSION__ >= 202311L
+#undef ENCODING_C23
+#define ENCODING_C23 1
+#endif
+#endif // defined(__STDC_VERSION__)
+
+#ifndef ENCODING_CPP17
+#define ENCODING_CPP17 0
+#endif
+
+#if defined(__cplusplus)
+#if __cplusplus >= 201703L
+#undef ENCODING_CPP17
+#define ENCODING_CPP17 1
+#endif
+#endif
+
+// Finding supported attributes
+
+#if !defined(UNLIKELY)
+#define UNLIKELY(expr) (expr)
+#if defined(__has_builtin)
 #if __has_builtin(__builtin_expect)
-#undef unlikely
-#define unlikely(expr) __builtin_expect(!!(expr), 0)
+#undef UNLIKELY
+#define UNLIKELY(expr) __builtin_expect(!!(expr), 0)
 #endif
-
-#if __has_builtin(__builtin_unreachable)
-#undef unreachable
-#define unreachable() __builtin_unreachable()
-#endif
-
-#endif // !defined(__has_builtin)
+#endif // defined(__has_builtin)
+#endif // !defined(UNLIKELY)
 
 #endif // COMPILER_EXTENSIONS_H

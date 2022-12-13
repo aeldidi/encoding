@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #include "common.h"
 #include "encoding/hex.h"
@@ -32,7 +32,5 @@ main()
 			ENCODING_BUFFER_TOO_SMALL);
 
 	// Edge cases
-	assert(hex_decode(0, bytes, 1, NULL) == ENCODING_INVALID_NULL_POINTER);
 	assert(hex_decode(2, bytes, 0, NULL) == ENCODING_BUFFER_TOO_SMALL);
-	assert(hex_decode(1, NULL, 1, NULL) == ENCODING_INVALID_NULL_POINTER);
 }

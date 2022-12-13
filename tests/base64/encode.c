@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <inttypes.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #include "common.h"
 #include "encoding/base64.h"
@@ -121,10 +121,4 @@ main()
 	assert(base64_encode(ARRAY_SIZEOF(valid6) - 1, valid6, 2, NULL,
 			       base64) == ENCODING_BUFFER_TOO_SMALL);
 	assert(base64_encode(0, NULL, ARRAY_SIZEOF(out), out, base64) == 0);
-	assert(base64_encode(1, NULL, 0, NULL, base64) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(base64_encode(1, NULL, ARRAY_SIZEOF(out), out, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(base64_encode(1, NULL, 1, NULL, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
 }

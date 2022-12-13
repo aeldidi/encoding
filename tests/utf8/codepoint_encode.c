@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #include "common.h"
 #include "encoding/utf8.h"
@@ -85,11 +85,4 @@ main()
 			ENCODING_BUFFER_TOO_SMALL);
 	assert(utf8_codepoint_encode(fowl_cp, 0, NULL) ==
 			ENCODING_BUFFER_TOO_SMALL);
-
-	// Test if utf8_codepoint_encode returns
-	// ENCODING_INVALID_NULL_POINTER when given invalid NULL pointers.
-
-	assert(utf8_codepoint_encode(0x0, 2, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(buf[0] == 0 && buf[1] == 0 && buf[2] == 0 && buf[3] == 0);
 }

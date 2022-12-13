@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
-#include <stdint.h>
+#include <inttypes.h>
 
 #include "common.h"
-#include "encoding/binary.h"
+#include "encoding/binary.c"
 #include "encoding/utf16.h"
 
 int
@@ -81,13 +81,8 @@ main()
 
 	// Testing some edge cases in the code
 
-	assert(utf16_decode(1, &invalid_val, 1, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
 	assert(utf16_decode(1, &invalid_val, 0, NULL) ==
 			ENCODING_BUFFER_TOO_SMALL);
-	assert(utf16_decode(1, NULL, 1, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(utf16_decode(1, NULL, 1, out) == ENCODING_INVALID_NULL_POINTER);
 	assert(utf16_decode(1, &invalid_val, 0, NULL) ==
 			ENCODING_BUFFER_TOO_SMALL);
 }

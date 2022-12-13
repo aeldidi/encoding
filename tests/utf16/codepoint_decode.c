@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
-#include <stdint.h>
+#include <inttypes.h>
 
 #include "common.h"
-#include "encoding/binary.h"
+#include "encoding/binary.c"
 #include "encoding/utf16.h"
 
 int

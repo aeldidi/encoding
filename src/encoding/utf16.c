@@ -1,23 +1,28 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <assert.h>
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
+#include "../../include/encoding/utf16.h"
 #include "compiler_extensions.h"
-#include "encoding/common.h"
-#include "encoding/utf16.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 static bool
-in_range16(const uint16_t x, const uint16_t start, const uint16_t end)
+in_range(const uint32_t x, const uint32_t start, const uint32_t end)
 {
 	return x >= start && x <= end;
 }
 
+ENCODING_PUBLIC
 bool
 utf16_valid(const size_t str_len, const uint16_t* str)
 {
-	if (unlikely(str == NULL && str_len > 0)) {
+	if (UNLIKELY(str == NULL && str_len > 0)) {
 		return false;
 	}
 
@@ -28,8 +33,8 @@ utf16_valid(const size_t str_len, const uint16_t* str)
 		} else if (str[i] < 0xd800 || str[i] > 0xdfff) {
 			continue;
 		} else if (i + 1 < str_len ||
-				in_range16(str[i], 0xd800, 0xdbff)) {
-			if (!in_range16(str[i + 1], 0xdc00, 0xdfff)) {
+				in_range(str[i], 0xd800, 0xdbff)) {
+			if (!in_range(str[i + 1], 0xdc00, 0xdfff)) {
 				return false;
 			}
 
@@ -48,7 +53,7 @@ static size_t
 utf16_codepoint_encoded_size(const uint32_t cp)
 {
 	if (cp > 0x10ffff || cp == 0xffff || cp == 0xfffe ||
-			in_range16(cp, 0xd800, 0xdfff)) {
+			in_range(cp, 0xd800, 0xdfff)) {
 		return 0;
 	} else if (cp < 0x10000) {
 		return 1;
@@ -69,39 +74,36 @@ utf16_encoded_length_codepoint_size(const uint32_t cp)
 	return 2;
 }
 
-int
-utf16_encoded_length(const size_t str_len, const uint32_t* str, size_t* out)
+ENCODING_PUBLIC
+size_t
+utf16_encoded_length(const size_t str_len, const uint32_t* str)
 {
-	if (unlikely(str_len == 0)) {
+	if (UNLIKELY(str_len == 0)) {
 		return 0;
 	}
 
-	if (unlikely(str == NULL || out == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
 	size_t result = 0;
 	for (size_t i = 0; i < str_len; i += 1) {
 		result += utf16_encoded_length_codepoint_size(str[i]);
 	}
 
-	*out = result;
-	return 0;
+	return result;
 }
 
+ENCODING_PUBLIC
 int
 utf16_codepoint_encode(const uint32_t cp, const size_t out_len, uint16_t* out)
 {
-	if (unlikely(out_len == 0)) {
+	if (UNLIKELY(out_len == 0)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (unlikely(out == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(out != NULL);
 
 	size_t size = utf16_codepoint_encoded_size(cp);
-	if (unlikely(out_len < size)) {
+	if (UNLIKELY(out_len < size)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
@@ -114,8 +116,8 @@ utf16_codepoint_encode(const uint32_t cp, const size_t out_len, uint16_t* out)
 		const uint32_t bits_0_to_9_set   = 0x003ff;
 		const uint32_t u                 = cp - 0x10000;
 
-		out[0] = 0xd800 | ((u & bits_10_to_19_set) >> 10);
-		out[1] = 0xdc00 | ((u & bits_0_to_9_set) >> 0);
+		out[0] = (uint16_t)(0xd800 | ((u & bits_10_to_19_set) >> 10));
+		out[1] = (uint16_t)(0xdc00 | ((u & bits_0_to_9_set) >> 0));
 		break;
 	}
 	default:
@@ -140,8 +142,8 @@ utf16_codepoint_decode(const size_t str_len, const uint16_t* str, size_t* size)
 
 	if (str[0] < 0xd800 || str[0] > 0xdfff) {
 		return str[0];
-	} else if (in_range16(str[0], 0xd800, 0xdbff)) {
-		if (str_len == 1 || !in_range16(str[1], 0xdc00, 0xdfff)) {
+	} else if (in_range(str[0], 0xd800, 0xdbff)) {
+		if (str_len == 1 || !in_range(str[1], 0xdc00, 0xdfff)) {
 			return ENCODING_CODEPOINT_ERROR;
 		}
 
@@ -157,31 +159,30 @@ utf16_codepoint_decode(const size_t str_len, const uint16_t* str, size_t* size)
 	}
 }
 
-int
-utf16_decoded_length(const size_t str_len, const uint16_t* str, size_t* out)
+ENCODING_PUBLIC
+size_t
+utf16_decoded_length(const size_t str_len, const uint16_t* str)
 {
 	if (str_len == 0) {
 		return 0;
 	}
 
-	if (str == NULL || out == NULL) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
 	size_t result = 0;
 	for (size_t i = 0; i < str_len; i += 1) {
-		if (in_range16(str[i], 0xd800, 0xdbff) && i + 1 < str_len &&
-				in_range16(str[i + 1], 0xdc00, 0xdfff)) {
+		if (in_range(str[i], 0xd800, 0xdbff) && i + 1 < str_len &&
+				in_range(str[i + 1], 0xdc00, 0xdfff)) {
 			i += 1;
 		}
 
 		result += 1;
 	}
 
-	*out = result;
-	return 0;
+	return result;
 }
 
+ENCODING_PUBLIC
 int
 utf16_encode(const size_t str_len, const uint32_t* str, const size_t out_len,
 		uint16_t* out)
@@ -190,15 +191,10 @@ utf16_encode(const size_t str_len, const uint32_t* str, const size_t out_len,
 		return 0;
 	}
 
-	if (str == NULL || out == NULL) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
+	assert(out != NULL);
 
-	size_t encoded_size = 0;
-	// We have already checked that str is not NULL and &encoded_size
-	// can not be NULL, so there is no need to check the return value.
-	(void)utf16_encoded_length(str_len, str, &encoded_size);
-
+	size_t encoded_size = utf16_encoded_length(str_len, str);
 	if (encoded_size > out_len) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
@@ -213,6 +209,7 @@ utf16_encode(const size_t str_len, const uint32_t* str, const size_t out_len,
 	return 0;
 }
 
+ENCODING_PUBLIC
 int
 utf16_decode(const size_t str_len, const uint16_t* str, const size_t out_len,
 		uint32_t* out)
@@ -221,21 +218,15 @@ utf16_decode(const size_t str_len, const uint16_t* str, const size_t out_len,
 		return 0;
 	}
 
-	if (str == NULL) {
-		return ENCODING_INVALID_NULL_POINTER;
+	assert(str != NULL);
+
+	if (out_len == 0) {
+		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (out == NULL) {
-		if (out_len == 0) {
-			return ENCODING_BUFFER_TOO_SMALL;
-		}
+	assert(out != NULL);
 
-		return ENCODING_INVALID_NULL_POINTER;
-	}
-
-	size_t decoded_size = 0;
-	(void)utf16_decoded_length(str_len, str, &decoded_size);
-
+	size_t decoded_size = utf16_decoded_length(str_len, str);
 	if (decoded_size > out_len) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
@@ -249,3 +240,7 @@ utf16_decode(const size_t str_len, const uint16_t* str, const size_t out_len,
 
 	return 0;
 }
+
+#if defined(__cplusplus)
+}
+#endif

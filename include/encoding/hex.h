@@ -13,11 +13,21 @@
 // The accepted characters in a hex string are '0' to '9', 'a' to 'f', and 'A'
 // to 'F'.
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
-#include "encoding/common.h"
+#if !defined(ENCODING_PUBLIC)
+#define ENCODING_PUBLIC
+#endif
+
+#if !defined(ENCODING_INVALID_ARGUMENT)
+#define ENCODING_INVALID_ARGUMENT (-2)
+#endif
+
+#if !defined(ENCODING_BUFFER_TOO_SMALL)
+#define ENCODING_BUFFER_TOO_SMALL (-3)
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,12 +46,10 @@ size_t hex_encoded_length(const size_t len);
 // hex_encode encodes the first str_len bytes of str into the first out_len
 // bytes of out as a string of hexadecimal characters.
 //
+// out and str must not be NULL.
+//
 // On success, returns 0.
 // On failure, returns one of the negative error values below:
-//
-// ENCODING_INVALID_NULL_POINTER
-// 	Either out was NULL and out_len was greather than 0, or str was NULL
-//	and str_len was greater than 0.
 //
 // ENCODING_BUFFER_TOO_SMALL
 // 	out_len was too small to hold the encoded data. To find out how many
@@ -65,12 +73,10 @@ size_t hex_decoded_length(const size_t len);
 // undefined behaviour what the result is when str is not valid. To check if
 // str is valid, hex_valid should be called.
 //
+// out and str must not be NULL.
+//
 // On success, returns 0.
 // On failure, returns one of the negative error values below:
-//
-// ENCODING_INVALID_NULL_POINTER
-// 	Either out was NULL and out_len was greather than 0, or str was NULL
-//	and str_len was greater than 0.
 //
 // ENCODING_BUFFER_TOO_SMALL
 // 	out_len was too small to hold the encoded data. To find out how many
@@ -94,14 +100,12 @@ size_t hex_dump_length(const size_t len);
 // address in the output, and the next address which would be printed had there
 // been more input will be placed in *output.
 //
+// out and str must not be NULL.
+//
 // If offset is NULL, 0 will be displayed as the first address.
 //
 // On success, returns 0.
 // On failure, returns one of the negative error values below:
-//
-// ENCODING_INVALID_NULL_POINTER
-// 	Either out was NULL and out_len was greather than 0, or str was NULL
-//	and str_len was greater than 0.
 //
 // ENCODING_BUFFER_TOO_SMALL
 // 	out_len was too small to hold the encoded data. To find out how many

@@ -1,8 +1,9 @@
 # `libencoding`
 
 `libencoding` is a library for encoding and decoding binary data in various
-formats. It's written in C but doesn't make use of the C runtime, meaning it
-should be usable in any situation.
+formats. It's written in C but doesn't make use of the C runtime except for
+`assert`, meaning it should be usable in any situation. It's also been tested
+to build using C++ compilers.
 
 ## Status
 
@@ -17,39 +18,16 @@ The following operations are supported:
 
 Each interface is documented in its respective header file. For example, the
 documentation for `base64_encode` is in a comment above the function prototype
-in `include/encoding/base64.h`.
+in `base64.h`.
 
-## Installing `libencoding`
+## Using `libencoding`
 
-`libencoding` uses the [Meson build system](https://mesonbuild.com), but is
-trivial to build by hand.
+Go to the [releases](https://github.com/aeldidi/libencoding/releases) page and
+download the latest release, which contains self-contained `.c` and `.h` files
+which you can compile and use.
 
-### Using `pkg-config`
-
-If already installed, `libencoding` can be used the same way any library
-supporting `pkg-config` is used. The module name is `encoding`.
-
-### Using Meson
-
-The following would go in your `meson.build` file:
-
-```
-encoding = subproject('encoding')
-encoding_dep = encoding.get_variable('encoding_dep')
-```
-
-`libencoding` can then be used as a dependency by adding it to your
-`executable()` or `library()` declaration by adding `encoding_dep` to the
-`dependencies` section.
-
-### Using Any Other Build System
-
-Simply build and link with each file in `src/` and add `include/` to your
-include directory.
-
-All defined symbols are prefixed with the name of the encoding they operate on,
-so no conflicts should occur by just doing the above steps. For example, the
-function to decode UTF-8 is called `utf8_decode`.
+Note that `binary.c` only contains `static` functions, and you include it
+directly.
 
 ## Security Model
 
@@ -72,5 +50,6 @@ trusted input, while also causing untrusted input to fail early.
 
 ## License
 
-`libencoding` is licensed under the 0BSD License. See the included `LICENSE`
-file more details.
+`libencoding` is licensed under the 0BSD License, which allows you to do
+whatever you want without restriction. See the included `LICENSE` file more
+details.

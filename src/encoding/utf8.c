@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <assert.h>
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
-#include "encoding/common.h"
-#include "encoding/utf8.h"
-
+#include "../../include/encoding/utf8.h"
 #include "compiler_extensions.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 // The Unicode replacement character (U+FFFD) is sometimes used when invalid
 // characters are encountered.
@@ -59,10 +62,11 @@ is_continuation(const uint8_t b)
 	return b >= 0x80 && b <= 0xbf;
 }
 
+ENCODING_PUBLIC
 bool
 utf8_valid(const size_t str_len, const uint8_t* str)
 {
-	if (unlikely(str == NULL)) {
+	if (UNLIKELY(str == NULL)) {
 		return false;
 	}
 
@@ -211,21 +215,15 @@ utf8_valid(const size_t str_len, const uint8_t* str)
 	return true;
 }
 
-int
-utf8_encoded_length(const size_t str_len, const uint32_t* str, size_t* out)
+ENCODING_PUBLIC
+size_t
+utf8_encoded_length(const size_t str_len, const uint32_t* str)
 {
-	if (out == NULL) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
-
 	if (str_len == 0) {
-		*out = 0;
 		return 0;
 	}
 
-	if (str == NULL) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
 	size_t result = 0;
 	for (size_t i = 0; i < str_len; i += 1) {
@@ -237,16 +235,14 @@ utf8_encoded_length(const size_t str_len, const uint32_t* str, size_t* out)
 		result += size;
 	}
 
-	*out = result;
-	return 0;
+	return result;
 }
 
+ENCODING_PUBLIC
 int
 utf8_codepoint_encode(const uint32_t cp, const size_t out_len, uint8_t* out)
 {
-	if (out == NULL && out_len > 0) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(out_len == 0 || out != NULL);
 
 	size_t size = utf8_codepoint_size(cp);
 	if (out_len < size) {
@@ -289,6 +285,7 @@ utf8_codepoint_encode(const uint32_t cp, const size_t out_len, uint8_t* out)
 	return (int)size;
 }
 
+ENCODING_PUBLIC
 int
 utf8_encode(const size_t str_len, const uint32_t* str, const size_t out_len,
 		uint8_t* out)
@@ -297,22 +294,15 @@ utf8_encode(const size_t str_len, const uint32_t* str, const size_t out_len,
 		return 0;
 	}
 
-	if (str == NULL) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
-	size_t encoded_size = 0;
-	// We have already checked that str is not NULL and &encoded_size
-	// can not be NULL, so there is no need to check the return value.
-	(void)utf8_encoded_length(str_len, str, &encoded_size);
+	size_t encoded_size = utf8_encoded_length(str_len, str);
 
 	if (encoded_size > out_len) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (out == NULL) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(out != NULL);
 
 	size_t j = 0;
 	for (size_t i = 0; i < str_len; i += 1) {
@@ -322,21 +312,15 @@ utf8_encode(const size_t str_len, const uint32_t* str, const size_t out_len,
 	return (int)j;
 }
 
-int
-utf8_decoded_length(const size_t str_len, const uint8_t* str, size_t* out)
+ENCODING_PUBLIC
+size_t
+utf8_decoded_length(const size_t str_len, const uint8_t* str)
 {
-	if (unlikely(out == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
-
-	if (unlikely(str_len == 0)) {
-		*out = 0;
+	if (UNLIKELY(str_len == 0)) {
 		return 0;
 	}
 
-	if (unlikely(str == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
 	size_t result = 0;
 	size_t i      = 0;
@@ -345,26 +329,26 @@ utf8_decoded_length(const size_t str_len, const uint8_t* str, size_t* out)
 		i += encoded_size_table[str[i]];
 	}
 
-	*out = result;
-	return 0;
+	return result;
 }
 
+ENCODING_PUBLIC
 uint32_t
 utf8_codepoint_decode(const size_t str_len, const uint8_t* str, size_t* size)
 {
 	size_t  tmp;
 	size_t* out_size = size;
-	if (unlikely(size == NULL)) {
+	if (UNLIKELY(size == NULL)) {
 		out_size = &tmp;
 	}
 
-	if (unlikely(str == NULL || str_len == 0)) {
+	if (UNLIKELY(str == NULL || str_len == 0)) {
 		*out_size = 3;
 		return ENCODING_CODEPOINT_ERROR;
 	}
 
 	const size_t len = encoded_size_table[str[0]];
-	if (unlikely(str_len < len)) {
+	if (UNLIKELY(str_len < len)) {
 		*out_size = 3;
 		return ENCODING_CODEPOINT_ERROR;
 	}
@@ -421,6 +405,7 @@ utf8_codepoint_decode(const size_t str_len, const uint8_t* str, size_t* size)
 	return str[0];
 }
 
+ENCODING_PUBLIC
 int
 utf8_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint32_t* out)
@@ -429,24 +414,20 @@ utf8_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 		return 0;
 	}
 
-	if (str == NULL) {
-		return ENCODING_INVALID_NULL_POINTER;
+	assert(str != NULL);
+
+	if (out_len == 0) {
+		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
-	if (out == NULL) {
-		if (out_len == 0) {
-			return ENCODING_BUFFER_TOO_SMALL;
-		}
-
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(out != NULL);
 
 	bool   truncated = false;
 	size_t j         = 0;
 	size_t i         = 0;
 	while (i < str_len && j < out_len) {
 		size_t len = encoded_size_table[str[i]];
-		if (unlikely(i + len > str_len)) {
+		if (UNLIKELY(i + len > str_len)) {
 			truncated = true;
 			break;
 		}
@@ -457,7 +438,7 @@ utf8_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 	}
 
 	// We couldn't decode the entire output.
-	if (unlikely(i < str_len)) {
+	if (UNLIKELY(i < str_len)) {
 		// We don't want to partially write to out if we couldn't
 		// decode the entire buffer.
 		for (size_t k = 0; k < out_len; k += 1) {
@@ -474,3 +455,7 @@ utf8_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 
 	return 0;
 }
+
+#if defined(__cplusplus)
+}
+#endif

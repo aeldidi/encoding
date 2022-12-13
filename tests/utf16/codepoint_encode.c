@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
-#include <stdint.h>
+#include <inttypes.h>
 
 #include "common.h"
-#include "encoding/binary.h"
+#include "encoding/binary.c"
 #include "encoding/utf16.h"
 
 int
@@ -96,11 +96,6 @@ main()
 			ENCODING_BUFFER_TOO_SMALL);
 	assert(utf16_codepoint_encode(0xffff, 0, NULL) ==
 			ENCODING_BUFFER_TOO_SMALL);
-
-	// Test that ENCODING_INVALID_NULL_POINTER is returned when out is NULL.
-
-	assert(utf16_codepoint_encode(0x11ffff, 1, NULL) ==
-			ENCODING_INVALID_NULL_POINTER);
 
 	// Testing some corner cases in the code.
 

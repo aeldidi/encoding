@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <inttypes.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #include "common.h"
 #include "encoding/base64.h"
@@ -48,9 +48,8 @@ main()
 	for (size_t i = 0; i < ARRAY_SIZEOF(rfc4648_cases); i += 1) {
 		assert(base64_decode(lens[i], rfc4648_cases[i],
 				       ARRAY_SIZEOF(out), out, base64) == 0);
-		size_t out_len = 0;
-		(void)base64_decoded_length(
-				lens[i], rfc4648_cases[i], &out_len);
+		size_t out_len = base64_decoded_length(
+				lens[i], rfc4648_cases[i]);
 		assert(mem_equal(key, out, out_len));
 
 		mem_set(out, 0, ARRAY_SIZEOF(out));
@@ -60,9 +59,8 @@ main()
 		assert(base64_decode(lens[i], rfc4648_cases[i],
 				       ARRAY_SIZEOF(out), out,
 				       sample_alphabet) == 0);
-		size_t out_len = 0;
-		(void)base64_decoded_length(
-				lens[i], rfc4648_cases[i], &out_len);
+		size_t out_len = base64_decoded_length(
+				lens[i], rfc4648_cases[i]);
 		assert(mem_equal(key, out, out_len));
 
 		mem_set(out, 0, ARRAY_SIZEOF(out));
@@ -100,12 +98,8 @@ main()
 
 	assert(base64_decode(0, NULL, 0, NULL, base64) == 0);
 	assert(base64_decode(1, rfc4648_cases[0], 1, NULL, base64) != 0);
-	assert(base64_decode(1, NULL, ARRAY_SIZEOF(out), out, base64) ==
-			ENCODING_INVALID_NULL_POINTER);
 	assert(base64_decode(lens[1], rfc4648_cases[1], 0, NULL, base64) ==
 			ENCODING_BUFFER_TOO_SMALL);
-	assert(base64_decode(lens[1], rfc4648_cases[1], ARRAY_SIZEOF(out), out,
-			       NULL) == ENCODING_INVALID_NULL_POINTER);
 	assert(base64_decode(lens[1], rfc4648_cases[1], 0, NULL, base64) ==
 			ENCODING_BUFFER_TOO_SMALL);
 }

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
-#include <stdint.h>
+#include <inttypes.h>
 
 #include "common.h"
-#include "encoding/binary.h"
+#include "encoding/binary.c"
 
 int
 main()
@@ -45,19 +45,10 @@ main()
 			       ENCODING_BYTE_ORDER_LITTLE) == 0);
 	assert(out == uint64);
 
-	// Test if we correctly fail to read a uint64 when parameters are
-	// invalid.
+	// Ensure the ENCODING_BUFFER_TOO_SMALL is returned when the output
+	// buffer is too strong.
 
-	out = 0;
-
-	assert(binary_uint64_decode(8, NULL, &out, ENCODING_BYTE_ORDER_BIG) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(out == 0);
-	assert(binary_uint64_decode(8, uint64_big_endian, NULL,
-			       ENCODING_BYTE_ORDER_BIG) ==
-			ENCODING_INVALID_NULL_POINTER);
-	assert(binary_uint64_decode(8, uint64_big_endian, &out, 3) ==
-			ENCODING_INVALID_ARGUMENT);
-	assert(binary_uint64_decode(1, uint64_big_endian, &out, 3) ==
+	assert(binary_uint64_decode(1, uint64_little_endian, &out,
+			       ENCODING_BYTE_ORDER_LITTLE) ==
 			ENCODING_BUFFER_TOO_SMALL);
 }

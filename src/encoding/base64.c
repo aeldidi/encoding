@@ -1,18 +1,28 @@
 // SPDX-License-Identifier: 0BSD
 // Copyright (C) 2022 Ayman El Didi
+#include <assert.h>
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
+#include "../../include/encoding/binary.c"
 #include "compiler_extensions.h"
-#include "encoding/base64.h"
-#include "encoding/binary.h"
 
 // The ASCII '=' character is used for padding.
 #define BASE64_PAD 0x3d
 
+#define EXTERN
+
+#if defined(__cplusplus)
+#undef EXTERN
+#define EXTERN extern
+extern "C" {
+#endif
+
 // A lookup table for each 6-bit binary value to the corresponding base64
 // byte.
+ENCODING_PUBLIC
+EXTERN
 const uint8_t base64[64] = {
 		// ASCII 'A' to 'Z'
 		0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a,
@@ -54,6 +64,8 @@ static const uint8_t base64_decode_table[256] = {
 
 // A lookup table for each 6-bit binary value to the corresponding base64url
 // byte.
+ENCODING_PUBLIC
+EXTERN
 const uint8_t base64url[64] = {
 		// ASCII 'A' to 'Z'
 		0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a,
@@ -83,6 +95,7 @@ static const uint8_t base64url_decode_table[256] = {
 		51, // ASCII 'a' to 'z'
 };
 
+ENCODING_PUBLIC
 size_t
 base64_encoded_length(const size_t len)
 {
@@ -287,20 +300,21 @@ base64url_valid_fast(const size_t str_len, const uint8_t* str,
 	return result & tmp1 & tmp2 & tmp3;
 }
 
+ENCODING_PUBLIC
 bool
 base64_valid(const size_t str_len, const uint8_t* str,
 		const uint8_t alphabet[64])
 {
-	if (unlikely(str_len == 0)) {
+	if (UNLIKELY(str_len == 0)) {
 		return true;
 	}
 
-	if (unlikely(alphabet == NULL || str == NULL)) {
+	if (UNLIKELY(alphabet == NULL || str == NULL)) {
 		return false;
 	}
 
 	size_t num_padding_chars = get_num_padding_chars(str_len, str);
-	if (unlikely(num_padding_chars > 2 || str_len % 4 != 0)) {
+	if (UNLIKELY(num_padding_chars > 2 || str_len % 4 != 0)) {
 		return false;
 	}
 
@@ -355,24 +369,21 @@ base64_valid(const size_t str_len, const uint8_t* str,
 	return result & tmp1 & tmp2 & tmp3;
 }
 
+ENCODING_PUBLIC
 int
 base64_encode(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint8_t* out, const uint8_t alphabet[64])
 {
-	if (unlikely(alphabet == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(alphabet != NULL);
 
-	if (unlikely(str_len == 0)) {
+	if (UNLIKELY(str_len == 0)) {
 		return 0;
 	}
 
-	if (unlikely(str == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
 	size_t encoded_len = base64_encoded_length(str_len);
-	if (unlikely(out == NULL || out_len < encoded_len)) {
+	if (UNLIKELY(out == NULL || out_len < encoded_len)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
@@ -410,36 +421,29 @@ base64_encode(const size_t str_len, const uint8_t* str, const size_t out_len,
 	return 0;
 }
 
-int
-base64_decoded_length(const size_t str_len, const uint8_t* str, size_t* out)
+ENCODING_PUBLIC
+size_t
+base64_decoded_length(const size_t str_len, const uint8_t* str)
 {
-	if (unlikely(out == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
-
-	if (unlikely(str_len == 0)) {
-		*out = 0;
+	if (UNLIKELY(str_len == 0)) {
 		return 0;
 	}
 
-	if (unlikely(str == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
-	*out = base64_decoded_length_impl(str_len, str);
-	return 0;
+	return base64_decoded_length_impl(str_len, str);
 }
 
-static int
+static uint8_t
 alphabet_find(const uint8_t ch, const uint8_t alphabet[64])
 {
-	for (int i = 0; i < 64; i += 1) {
+	for (uint8_t i = 0; i < 64; i += 1) {
 		if (ch == alphabet[i]) {
 			return i;
 		}
 	}
 
-	return -1;
+	return UINT8_MAX;
 }
 
 static int
@@ -464,31 +468,29 @@ decode_fast(const size_t str_len, const uint8_t* str, uint8_t* out,
 	return 0;
 }
 
+ENCODING_PUBLIC
 int
 base64_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 		uint8_t* out, const uint8_t alphabet[64])
 {
-	if (unlikely(alphabet == NULL)) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(alphabet != NULL);
 
-	if (unlikely(str_len == 0)) {
+	if (UNLIKELY(str_len == 0)) {
 		return 0;
 	}
 
-	if (unlikely(str == NULL || (out == NULL && out_len > 0))) {
-		return ENCODING_INVALID_NULL_POINTER;
-	}
+	assert(str != NULL);
 
-	if (unlikely(str_len % 4 != 0)) {
+	if (UNLIKELY(str_len % 4 != 0)) {
 		return ENCODING_INVALID_ARGUMENT;
 	}
 
-	size_t decoded_len = 0;
-	(void)base64_decoded_length(str_len, str, &decoded_len);
-	if (unlikely(out_len < decoded_len)) {
+	size_t decoded_len = base64_decoded_length(str_len, str);
+	if (UNLIKELY(out_len < decoded_len)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
+
+	assert(out_len == 0 || out != NULL);
 
 	if (alphabet == base64) {
 		return decode_fast(
@@ -514,3 +516,8 @@ base64_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 
 	return 0;
 }
+
+#if defined(__cplusplus)
+}
+#endif
+#undef EXTERN
