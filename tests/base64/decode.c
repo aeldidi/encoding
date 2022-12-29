@@ -3,8 +3,8 @@
 #include <inttypes.h>
 #include <stddef.h>
 
+#include "../../src/base64.h"
 #include "common.h"
-#include "encoding/base64.h"
 
 static const uint8_t sample_alphabet[64] = {
 		// ASCII 'A' to 'Z'

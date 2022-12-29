@@ -5,8 +5,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include "../../src/hex.h"
 #include "common.h"
-#include "encoding/hex.h"
 
 int
 main()

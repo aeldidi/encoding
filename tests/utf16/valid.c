@@ -1,8 +1,8 @@
 #include <inttypes.h>
 
+#include "../../src/binary.c"
+#include "../../src/utf16.h"
 #include "common.h"
-#include "encoding/binary.c"
-#include "encoding/utf16.h"
 
 int
 main()

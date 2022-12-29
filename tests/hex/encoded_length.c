@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "../../src/hex.h"
 #include "common.h"
-#include "encoding/hex.h"
 
 int
 main()

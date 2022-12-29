@@ -2,8 +2,8 @@
 // Copyright (C) 2022 Ayman El Didi
 #include <inttypes.h>
 
+#include "../../src/utf16.h"
 #include "common.h"
-#include "encoding/utf16.h"
 
 int
 main()

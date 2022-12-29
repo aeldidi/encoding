@@ -3,8 +3,8 @@
 #include <inttypes.h>
 #include <stddef.h>
 
+#include "../../src/base32.h"
 #include "common.h"
-#include "encoding/base32.h"
 
 int
 main()

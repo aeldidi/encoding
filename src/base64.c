@@ -5,7 +5,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../../include/encoding/binary.c"
+#include "base64.h"
+#include "binary.c"
 #include "compiler_extensions.h"
 
 // The ASCII '=' character is used for padding.

@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "../../src/utf8.h"
 #include "common.h"
-#include "encoding/utf8.h"
 
 int
 main()

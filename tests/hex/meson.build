@@ -1,71 +1,71 @@
 valid = executable(
-	'valid',
-	'valid.c',
-	include_directories: test_incdirs,
-	build_by_default: false,
-	dependencies: encoding_dep,
+    'valid',
+    ['valid.c', amalgamate_srcs],
+    include_directories: incdirs,
+    build_by_default: false,
 )
-test('valid',
-	valid,
-	suite: 'hex',
+test(
+    'valid',
+    valid,
+    suite: 'hex',
 )
 
 dump = executable(
-	'dump',
-	'dump.c',
-	include_directories: test_incdirs,
-	build_by_default: false,
-	dependencies: encoding_dep,
+    'dump',
+    ['dump.c', amalgamate_srcs],
+    include_directories: incdirs,
+    build_by_default: false,
 )
-test('dump',
-	dump,
-	suite: 'hex',
+test(
+    'dump',
+    dump,
+    suite: 'hex',
 )
 
 encode = executable(
-	'encode',
-	'encode.c',
-	include_directories: test_incdirs,
-	build_by_default: false,
-	dependencies: encoding_dep,
+    'encode',
+    ['encode.c', amalgamate_srcs],
+    include_directories: incdirs,
+    build_by_default: false,
 )
-test('encode',
-	encode,
-	suite: 'hex',
+test(
+    'encode',
+    encode,
+    suite: 'hex',
 )
 
 encoded_length = executable(
-	'encoded_length',
-	'encoded_length.c',
-	include_directories: test_incdirs,
-	build_by_default: false,
-	dependencies: encoding_dep,
+    'encoded_length',
+    ['encoded_length.c', amalgamate_srcs],
+    include_directories: incdirs,
+    build_by_default: false,
 )
-test('encoded_length',
-	encoded_length,
-	suite: 'hex',
+test(
+    'encoded_length',
+    encoded_length,
+    suite: 'hex',
 )
 
 decode = executable(
-	'decode',
-	'decode.c',
-	include_directories: test_incdirs,
-	build_by_default: false,
-	dependencies: encoding_dep,
+    'decode',
+    ['decode.c', amalgamate_srcs],
+    include_directories: incdirs,
+    build_by_default: false,
 )
-test('decode',
-	decode,
-	suite: 'hex',
+test(
+    'decode',
+    decode,
+    suite: 'hex',
 )
 
 decoded_length = executable(
-	'decoded_length',
-	'decoded_length.c',
-	include_directories: test_incdirs,
-	build_by_default: false,
-	dependencies: encoding_dep,
+    'decoded_length',
+    ['decoded_length.c', amalgamate_srcs],
+    include_directories: incdirs,
+    build_by_default: false,
 )
-test('decoded_length',
-	decoded_length,
-	suite: 'hex',
+test(
+    'decoded_length',
+    decoded_length,
+    suite: 'hex',
 )

@@ -5,8 +5,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../../include/encoding/utf8.h"
 #include "compiler_extensions.h"
+#include "utf8.h"
 
 #if defined(__cplusplus)
 extern "C" {

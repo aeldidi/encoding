@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <limits.h>
 #include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +16,23 @@
 // amalgamated .c and .h file.
 //
 // All includes are relative to the file being amalgamated.
+
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+
+#define FNV_64_PRIME   UINT64_C(0x100000001b3)
+#define FNV_64_INITIAL UINT64_C(0xcbf29ce484222325)
+
+uint64_t
+fnv_1a(const size_t buf_len, const uint8_t* buf)
+{
+	uint64_t hash = FNV_64_INITIAL;
+
+	for (size_t i = 0; i < buf_len; i += 1) {
+		hash = (hash ^ buf[i]) * FNV_64_PRIME;
+	}
+
+	return hash;
+}
 
 static char*
 vformat(const char* fmt, va_list args)
@@ -57,7 +76,7 @@ readfull(char* filename)
 
 	uint8_t* result = calloc(2, 1);
 	if (result == NULL) {
-		fclose(f);
+		(void)fclose(f);
 		return result;
 	}
 
@@ -74,22 +93,38 @@ readfull(char* filename)
 		void* ptr = realloc(result, i + 2);
 		if (ptr == NULL) {
 			free(result);
-			fclose(f);
+			(void)fclose(f);
 			return NULL;
 		}
 		result = ptr;
 	}
 
-	fclose(f);
+	(void)fclose(f);
 	return result;
 }
 
-void
-amalgamate_file(char* dir, char* file)
-{
-	FILE* f = fopen(file, "w");
-	assert(f != NULL);
+#define MAX_INCLUDES 1000
 
+bool
+file_has_been_included(const size_t str_len, const char* str,
+		const size_t hashes_len, const uint64_t* hashes)
+{
+	uint64_t hash = fnv_1a(str_len, (uint8_t*)str);
+	for (size_t i = 0; i < hashes_len; i += 1) {
+		if (hash == hashes[i]) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+// Amalgamates file in dir into f, using pool to check if a file has already
+// been included.
+void
+amalgamate_file(const char* dir, const char* file, FILE* f, size_t* hashes_len,
+		uint64_t* hashes)
+{
 	char* filename = format("%s/%s", dir, file);
 	assert(filename != NULL);
 	char* content = (char*)readfull(filename);
@@ -105,6 +140,17 @@ amalgamate_file(char* dir, char* file)
 		char* closing_quote = strchr(ptr, '"');
 		assert(closing_quote != NULL);
 
+		size_t include_len = closing_quote - ptr;
+		if (file_has_been_included(
+				    include_len, ptr, *hashes_len, hashes)) {
+			prev = closing_quote + 2;
+			continue;
+		}
+
+		assert(*hashes_len + 1 < MAX_INCLUDES);
+		hashes[*hashes_len] = fnv_1a(include_len, (uint8_t*)ptr);
+		*hashes_len += 1;
+
 		char* fname = format("%s/%.*s", dir, closing_quote - ptr, ptr);
 		assert(fname != NULL);
 		char* include = (char*)readfull(fname);
@@ -113,43 +159,56 @@ amalgamate_file(char* dir, char* file)
 		(void)fprintf(f, "%s\n", include);
 		free(include);
 
-		prev = closing_quote + 1;
+		prev = closing_quote + 2;
 	}
 
-	(void)fprintf(f, "%s\n", prev);
+	(void)fprintf(f, "%s", prev);
 	free(content);
-
-	fclose(f);
 }
 
 int
 main(int argc, char** argv)
 {
-	if (argc != 4) {
+	if (argc != 3) {
 		(void)fprintf(stderr,
-				"usage: %s [.c directory] [.h directory] "
-				"[filename without "
-				"extension]\n"
+				"usage: %s [src directory] "
+				"[filename without extension]\n"
 				"Given a source filename without its "
 				"extension, amalgamates its .c source and its "
 				"header.\n\n"
 				"All includes are resolved relative to the "
-				"file being amalgamated.\n",
+				"src directory given.\n",
 				argv[0]);
 		return EXIT_FAILURE;
 	}
 
-	char* fname = format("%s.c", argv[3]);
-	assert(fname != NULL);
+	size_t src_len = strlen(argv[1]);
+	if (argv[1][src_len - 1] == '/') {
+		argv[1][src_len - 1] = '\0';
+	}
 
-	amalgamate_file(argv[1], fname);
+	char* fname = format("%s.c", argv[2]);
+	assert(fname != NULL);
+	FILE* f = fopen(fname, "w");
+	assert(f != NULL);
+
+	static uint64_t include_hashes[MAX_INCLUDES];
+	size_t          include_hashes_len = 0;
+
+	amalgamate_file(argv[1], fname, f, &include_hashes_len,
+			include_hashes);
 
 	free(fname);
+	(void)fclose(f);
 
-	fname = format("%s.h", argv[3]);
+	fname = format("%s.h", argv[2]);
 	assert(fname != NULL);
+	f = fopen(fname, "w");
+	assert(f != NULL);
 
-	amalgamate_file(argv[2], fname);
+	amalgamate_file(argv[1], fname, f, &include_hashes_len,
+			include_hashes);
 
 	free(fname);
+	(void)fclose(f);
 }

@@ -1,4 +1,4 @@
-test_incdirs = [incdirs, include_directories('.')]
+incdirs = include_directories('.')
 
 subdir('base32')
 subdir('base64')

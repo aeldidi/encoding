@@ -1,3 +1,3 @@
 ---
-Checks:          '*,-altera-*,-llvmlibc-*,-cppcoreguidelines-*,-readability-*,-bugprone-easily-swappable-parameters,-hicpp-signed-bitwise,-llvm-else-after-return,-bugprone-suspicious-include'
+Checks:          '*,-altera-*,-llvmlibc-*,-cppcoreguidelines-*,-readability-*,-bugprone-easily-swappable-parameters,-hicpp-signed-bitwise,-llvm-else-after-return,-bugprone-suspicious-include,-android-cloexec-fopen'
 WarningsAsErrors: true
