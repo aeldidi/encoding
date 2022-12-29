@@ -22,7 +22,7 @@ in `base64.h`.
 
 ## Using `aeldidi/encoding`
 
-Go to the [releases](https://github.com/aeldidi/aeldidi/encoding/releases) page and
+Go to the [releases](https://github.com/aeldidi/encoding/releases) page and
 download the latest release, which contains self-contained `.c` and `.h` files
 which you can compile and use.
 
