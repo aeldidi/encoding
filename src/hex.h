@@ -93,14 +93,14 @@ int hex_decode(const size_t str_len, const uint8_t* str, const size_t out_len,
 ENCODING_PUBLIC
 size_t hex_dump_length(const size_t len);
 
-// hex_dump outputs a human-friendly UTF-8 representation of the first str_len
-// bytes of str to the first out_len bytes of the buffer out.
+// hex_dump outputs a human-friendly UTF-8 representation of the first buf_len
+// bytes of buf to the first out_len bytes of the buffer out.
 //
 // If offset != NULL, the value pointed to by offset will be used as the first
 // address in the output, and the next address which would be printed had there
 // been more input will be placed in *output.
 //
-// out and str must not be NULL.
+// out and buf must not be NULL.
 //
 // If offset is NULL, 0 will be displayed as the first address.
 //
@@ -121,7 +121,7 @@ size_t hex_dump_length(const size_t len);
 // 00000010  0a 62 75 69 6c 64 2a 0a  2e 63 61 63 68 65 2a     |.build*..cache*|
 // ```
 ENCODING_PUBLIC
-int hex_dump(const size_t str_len, const uint8_t* str, const size_t out_len,
+int hex_dump(const size_t buf_len, const uint8_t* buf, const size_t out_len,
 		uint8_t* out, uint64_t* offset);
 
 #ifdef __cplusplus

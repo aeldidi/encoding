@@ -1,6 +1,6 @@
-# `libencoding`
+# `aeldidi/encoding`
 
-`libencoding` is a library for encoding and decoding binary data in various
+`aeldidi/encoding` is a library for encoding and decoding binary data in various
 formats. It's written in C but doesn't make use of the C runtime except for
 `assert`, meaning it should be usable in any situation. It's also been tested
 to build using C++ compilers.
@@ -11,7 +11,7 @@ The following operations are supported:
 
 - encoding, decoding, and validating UTF-8
 - encoding, decoding, and validating UTF-16
-- encoding, decoding, and validating base16 (encoding/hex), base32, and base64
+- encoding, decoding, and validating base16 (hex.c/hex.h), base32, and base64
 - encoding and decoding binary data in big or little endian byte order
 
 ## Documentation
@@ -20,9 +20,9 @@ Each interface is documented in its respective header file. For example, the
 documentation for `base64_encode` is in a comment above the function prototype
 in `base64.h`.
 
-## Using `libencoding`
+## Using `aeldidi/encoding`
 
-Go to the [releases](https://github.com/aeldidi/libencoding/releases) page and
+Go to the [releases](https://github.com/aeldidi/aeldidi/encoding/releases) page and
 download the latest release, which contains self-contained `.c` and `.h` files
 which you can compile and use.
 
@@ -50,6 +50,6 @@ trusted input, while also causing untrusted input to fail early.
 
 ## License
 
-`libencoding` is licensed under the 0BSD License, which allows you to do
+`aeldidi/encoding` is licensed under the 0BSD License, which allows you to do
 whatever you want without restriction. See the included `LICENSE` file more
 details.

@@ -179,12 +179,12 @@ uint64_to_str(uint64_t num)
 
 ENCODING_PUBLIC
 int
-hex_dump(const size_t str_len, const uint8_t* str, const size_t out_len,
+hex_dump(const size_t buf_len, const uint8_t* buf, const size_t out_len,
 		uint8_t* out, uint64_t* offset)
 {
-	assert(str_len == 0 || str != NULL);
+	assert(buf_len == 0 || buf != NULL);
 
-	if (UNLIKELY(hex_dump_length(str_len) > out_len)) {
+	if (UNLIKELY(hex_dump_length(buf_len) > out_len)) {
 		return ENCODING_BUFFER_TOO_SMALL;
 	}
 
@@ -194,13 +194,13 @@ hex_dump(const size_t str_len, const uint8_t* str, const size_t out_len,
 	if (offset != NULL) {
 		address = *offset;
 		// Detects if address value would wrap around.
-		if (UNLIKELY(address > SIZE_MAX - str_len)) {
+		if (UNLIKELY(address > SIZE_MAX - buf_len)) {
 			return ENCODING_INVALID_ARGUMENT;
 		}
 	}
 
 	size_t out_index = 0;
-	for (size_t i = 0; i < str_len; i += 16) {
+	for (size_t i = 0; i < buf_len; i += 16) {
 		// Address column
 		uint64_to_str(address);
 		for (size_t j = 0; j < 8; j += 1) {
@@ -218,11 +218,11 @@ hex_dump(const size_t str_len, const uint8_t* str, const size_t out_len,
 		for (size_t j = 0; j < 2; j += 1) {
 			for (size_t k = 0; k < 8; k += 1) {
 				const size_t idx = (i + k) + (j * 8);
-				if (idx > str_len - 1) {
+				if (idx > buf_len - 1) {
 					out[out_index]     = UTF8_SPACE;
 					out[out_index + 1] = UTF8_SPACE;
 				} else {
-					(void)hex_encode(1, &str[idx],
+					(void)hex_encode(1, &buf[idx],
 							SIZE_MAX,
 							&out[out_index]);
 				}
@@ -237,10 +237,10 @@ hex_dump(const size_t str_len, const uint8_t* str, const size_t out_len,
 		// ASCII representation column
 		out[out_index] = UTF8_PIPE;
 		out_index += 1;
-		for (size_t j = 0; j < 16 && i + j < str_len;
+		for (size_t j = 0; j < 16 && i + j < buf_len;
 				j += 1, out_index += 1) {
-			if (str[i + j] < 0x7f && str[i + j] > 0x1f) {
-				out[out_index] = str[i + j];
+			if (buf[i + j] < 0x7f && buf[i + j] > 0x1f) {
+				out[out_index] = buf[i + j];
 			} else {
 				out[out_index] = UTF8_PERIOD;
 			}
