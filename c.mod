@@ -1,2 +1,2 @@
-module c.eldidi.org/encoding
+module github.com/aeldidi/encoding
 version c11
