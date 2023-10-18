@@ -10,16 +10,16 @@ project(
 )
 
 srcs = files(
-    'src/base32.c',
-    'src/base32.h',
-    'src/base64.c',
-    'src/base64.h',
-    'src/hex.c',
-    'src/hex.h',
-    'src/utf16.c',
-    'src/utf16.h',
-    'src/utf8.c',
-    'src/utf8.h',
+    'base32/base32.c',
+    'base32/base32.h',
+    'base64/base64.c',
+    'base64/base64.h',
+    'hex/hex.c',
+    'hex/hex.h',
+    'utf16/utf16.c',
+    'utf16/utf16.h',
+    'utf8/utf8.c',
+    'utf8/utf8.h',
 )
 
 # Generate the amalgamations
@@ -37,7 +37,7 @@ foreach file : ['base32', 'base64', 'hex', 'utf8', 'utf16']
         output: file + '.c',
         command: [
             amalgamate_exe,
-            meson.source_root() / 'src',
+            meson.source_root() / file,
             file,
         ],
     )

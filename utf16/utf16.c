@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "compiler_extensions.h"
+#include "../compiler_extensions.h"
 #include "utf16.h"
 
 #if defined(__cplusplus)

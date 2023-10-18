@@ -5,9 +5,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "../binary/binary.c"
+#include "../compiler_extensions.h"
 #include "base32.h"
-#include "binary.c"
-#include "compiler_extensions.h"
 
 #define EXTERN
 

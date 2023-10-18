@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../../src/hex.h"
+#include "../../hex/hex.h"
 #include "common.h"
 
 int

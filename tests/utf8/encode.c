@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../../src/utf8.h"
+#include "../../utf8/utf8.h"
 #include "common.h"
 
 int

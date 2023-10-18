@@ -3,7 +3,7 @@
 #include <inttypes.h>
 #include <stddef.h>
 
-#include "../../src/base32.h"
+#include "../../base32/base32.h"
 #include "common.h"
 
 static const uint8_t sample_alphabet[32] = {

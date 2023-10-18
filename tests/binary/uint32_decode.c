@@ -2,7 +2,7 @@
 // Copyright (C) 2022 Ayman El Didi
 #include <inttypes.h>
 
-#include "../../src/binary.c"
+#include "../../binary/binary.c"
 #include "common.h"
 
 int

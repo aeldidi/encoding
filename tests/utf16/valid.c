@@ -1,7 +1,7 @@
 #include <inttypes.h>
 
-#include "../../src/binary.c"
-#include "../../src/utf16.h"
+#include "../../binary/binary.c"
+#include "../../utf16/utf16.h"
 #include "common.h"
 
 int

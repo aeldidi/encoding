@@ -2,7 +2,7 @@
 // Copyright (C) 2022 Ayman El Didi
 #include <inttypes.h>
 
-#include "../../src/utf16.h"
+#include "../../utf16/utf16.h"
 #include "common.h"
 
 int

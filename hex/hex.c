@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "binary.c"
-#include "compiler_extensions.h"
+#include "../binary/binary.c"
+#include "../compiler_extensions.h"
 #include "hex.h"
 
 #if defined(__cplusplus)
