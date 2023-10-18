@@ -6,7 +6,7 @@
 #include <stddef.h>
 
 #include "../compiler_extensions.h"
-#include "utf16.h"
+#include "./utf16.h"
 
 #if defined(__cplusplus)
 extern "C" {

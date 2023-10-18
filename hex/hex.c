@@ -6,7 +6,7 @@
 
 #include "../binary/binary.c"
 #include "../compiler_extensions.h"
-#include "hex.h"
+#include "./hex.h"
 
 #if defined(__cplusplus)
 extern "C" {

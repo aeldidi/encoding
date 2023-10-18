@@ -7,7 +7,7 @@
 
 #include "../binary/binary.c"
 #include "../compiler_extensions.h"
-#include "base32.h"
+#include "./base32.h"
 
 #define EXTERN
 

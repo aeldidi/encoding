@@ -7,7 +7,7 @@
 
 #include "../binary/binary.c"
 #include "../compiler_extensions.h"
-#include "base64.h"
+#include "./base64.h"
 
 // The ASCII '=' character is used for padding.
 #define BASE64_PAD 0x3d
