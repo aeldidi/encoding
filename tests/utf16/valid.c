@@ -1,6 +1,6 @@
 #include <inttypes.h>
 
-#include "../../binary/binary.c"
+#include "../../binary/binary.h"
 #include "../../utf16/utf16.h"
 #include "common.h"
 

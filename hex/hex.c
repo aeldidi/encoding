@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../binary/binary.c"
+#include "../binary/binary.h"
 #include "../compiler_extensions.h"
 #include "./hex.h"
 

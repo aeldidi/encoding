@@ -3,7 +3,7 @@
 #ifndef ENCODING_BINARY_H
 #define ENCODING_BINARY_H
 
-// encoding/binary.c provides functions for handling binary data of varying
+// encoding/binary.h provides functions for handling binary data of varying
 // byte order. You should include this C file directly, as it only contains
 // static functions.
 
